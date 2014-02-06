@@ -6,7 +6,7 @@
 #    By: hmichals <hmichals@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/02/05 01:07:34 by hmichals          #+#    #+#              #
-#    Updated: 2014/02/06 17:08:03 by hmichals         ###   ########.fr        #
+#    Updated: 2014/02/06 20:25:29 by hmichals         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -76,11 +76,12 @@ while choice != "1" && choice != "2" && choice != "3" && choice != "4"
 end
 system("clear")
 case choice
-    #Still under construction
-when "1" then
 
+when "1" then
   prot = Array.new
   prot_h = Array.new
+  no_h_files = Array.new
+  is_h_here = 0
   project = ""
 
   if !File.exist?("Makefile") || !File.exist?(srcs) || !File.exist?(includes)
@@ -88,16 +89,8 @@ when "1" then
   else
     c_files_make = Array.new
     count = 0
-    c_files = Dir.glob(srcs + '*.c')
-    c_files.each do |f|
-      File.open(f, 'r'){ |f_cont|
-        f_cont.each_line do |line|
-        if line.match(/^(?!static)(^[\w].*[)]$)/) && !line.include?("main(")
-          prot.push(line.strip)
-        end
-      end
-      }
-    end
+
+    #here we get the project's name
     File.open("Makefile", 'r'){ |f|
       f.each_line do |line|
         if line.match (/^NAME =/)
@@ -107,6 +100,44 @@ when "1" then
     }
     project.gsub!("NAME = ", "")
     project.delete!("\n")
+
+    c_files = Dir.glob(srcs + '*.c')
+    c_files.each do |f|
+      is_h_here = 0
+      File.open(f, 'r'){ |f_cont|
+        f_cont.each_line do |line|
+        if line.match(/^(?!static)(^[\w].*[)]$)/) && !line.include?("main(")
+          prot.push(line.strip)
+        end
+          if line == "#include <#{project}.h>\n"
+            is_h_here = 1
+          end
+      end
+      }
+      if is_h_here == 0
+        no_h_files.push(f)
+      end
+    end
+    puts("\nChecking if your srcs.c contain \"#include <#{project}.h>\".".blue)
+    puts("")
+    puts("===============================================================")
+    puts("")
+    no_h_files.each do |f|
+      puts("NO INCLUDE IN ".red + f.blue)
+    end
+    no_h_files.each do |f|
+      tmp = File.read(f)
+      tmp.gsub!("#.fr       */
+/*                                                                            */
+/* ************************************************************************** */\n", "#.fr       */
+/*                                                                            */
+/* ************************************************************************** */\n\n#include <#{project}.h>")
+      File.open(f, 'w') { |f| f.puts(tmp)
+      }
+      print("==".green)
+    end
+    puts("> COMPLETE: Please press enter to continue".green)
+    gets.chomp
     puts("\nChecking if your #{project.red}.h is up-to-date.".blue)
     puts("")
 puts("===============================================================")
