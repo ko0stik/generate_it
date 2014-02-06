@@ -6,7 +6,7 @@
      By: hmichals <hmichals@student.42.fr>          +#+  +:+       +#+          
                                                   +#+#+#+#+#+   +#+             
      Created: 2014/02/05 16:12:47 by hmichals          #+#    #+#               
-     Updated: 2014/02/05 16:15:13 by hmichals         ###   ########.fr         
+     Updated: 2014/02/06 16:47:58 by hmichals         ###   ########.fr         
                                                                                 
 ********************************************************************************
 
@@ -16,5 +16,7 @@ Petit generateur de repo base sur l'architecture :
 > srcs (main.c)
 > objs (.gitignore)
 > includes (project_name.h)
+
+Vous pouvez egalement mettre a jour votre .h en supprimant les prototypes obsoletes ou en rajoutant les nouveaux non encore ajoutes.
 
 Pour l'utiliser, "ruby generate_it.rb [opt]" ou opt peut etre 1/2/3

@@ -6,7 +6,7 @@
 #    By: hmichals <hmichals@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/02/05 01:07:34 by hmichals          #+#    #+#              #
-#    Updated: 2014/02/05 16:54:40 by hmichals         ###   ########.fr        #
+#    Updated: 2014/02/06 16:45:56 by hmichals         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -60,16 +60,17 @@ while choice != "1" && choice != "2" && choice != "3" && choice != "4"
   system("clear")
   puts "Hello #{user.delete("\n").red}! What is it you want to achieve?".center(120).pink
   puts "-------------------------------------------------------------------------------------------------".red
-  puts "#1".red + " ->###                                                                                        #{"|".red}"
+  puts "#1".red + " ->update headers prototypes                                                                  #{"|".red}"
   puts "#2".red + " ->create a new project repo                                                                  #{"|".red}"
   puts "#3".red + " ->update a project repo (must be done from the project root folder)                          #{"|".red}"
   puts "#4".red + " ->exit".blue + "                                                                                       |".red
   puts "-------------------------------------------------------------------------------------------------".red
   puts "\n\n\nNB:".red + "		Please note that this script is still being under construction."
   puts "\nDONE".blue + "		- Now with headers preimplemented (for standard logins)
-		- Now names with less than 8 chars also have a correct header"
+		- Now names with less than 8 chars also have a correct header
+		- your project.h is now updated accordingly to your sources.c, can still be buggy though"
   puts "\nTODOLIST".blue + "	- BUGFIX: deleting main.c from the srcs repo messes up the Makefile
-		- the ### section is still empty"
+		- the section 1 is still empty"
   puts "\n\n\n\n\n\n\n\nhmichals v0.2".blue
   choice = gets.chomp
 end
@@ -77,21 +78,106 @@ system("clear")
 case choice
     #Still under construction
 when "1" then
-  puts "System is still not functional, please wait for update"
 
+  prot = Array.new
+  prot_h = Array.new
+  project = ""
+
+  if !File.exist?("Makefile") || !File.exist?(srcs) || !File.exist?(includes)
+    puts("Error".red + ", it seems you are not in a correct directory or you don't have the correct architecture")
+  else
+    c_files_make = Array.new
+    count = 0
+    c_files = Dir.glob(srcs + '*.c')
+    c_files.each do |f|
+      File.open(f, 'r'){ |f_cont|
+        f_cont.each_line do |line|
+        if line.match(/^(?!static)(^[\w].*[)]$)/) && !line.include?("main(")
+          prot.push(line.strip)
+        end
+      end
+      }
+    end
+    File.open("Makefile", 'r'){ |f|
+      f.each_line do |line|
+        if line.match (/^NAME =/)
+          project = line
+        end
+      end
+    }
+    project.gsub!("NAME = ", "")
+    project.delete!("\n")
+    puts("\nChecking if your #{project.red}.h is up-to-date.".blue)
+    puts("")
+puts("===============================================================")
+puts("We check if all functions have their prototype in the header")
+puts("")
+    File.open(includes + project + ".h", 'r'){ |f|
+        f.each_line do |line|
+        if line.match(/^(?!static|typedef|extern)(^[\w].*[;]$)/)
+          prot_h.push(line.strip)
+        end
+      end
+    }
+  end
+
+  count = 0
+  prot.each do |p|
+    bol = 0
+    prot_h.each do |h|
+      if p.gsub(/\s+/, "") == h.gsub(/\s+/, "").delete(";")
+        bol = 1
+        puts(h.split[1].gsub(/\(.*/, "") + "() >>" + " MATCH".green)
+      end
+    end
+    if bol == 0
+      puts(p.split[1].gsub(/\(.*/, "") + "() >>" + " NO MATCH".red + " adding it to #{project.blue}.h")
+      tmp = File.read(includes + project + ".h")
+      count += 1
+      tmp.gsub!("/* function prototypes */\n", "/* function prototypes */\n\n" + p + ";")
+      File.open(includes + project + ".h", 'w'){ |f| f.puts(tmp) }
+    end
+  end
+
+puts("")
+puts("===============================================================")
+puts("Now we check if the header does not contain non-existent function prototypes")
+puts("")
+
+  count_bis = 0
+
+  prot_h.each do |p|
+    bol = 0
+    prot.each do |h|
+      if p.gsub(/\s+/, "").delete(";") == h.gsub(/\s+/, "")
+        bol = 1
+        puts(h.split[1].gsub(/\(.*/, "") + "() >>" + " MATCH".green)
+      end
+    end
+    if bol == 0
+      puts(p.split[1].gsub(/\(.*/, "") + "() >>" + " NO MATCH".red + " deleting it from #{project.blue}.h")
+      tmp = File.read(includes + project + ".h")
+      count_bis += 1
+      tmp.gsub!(p + "\n", "")
+      File.open(includes + project + ".h", 'w'){ |f| f.puts(tmp) }
+    end
+  end
+
+  puts("")
+  puts("#{count.to_s.green} prototypes added and #{count.to_s.green} removed from your #{project.red}.h, please check the padding")
   #Create for you a standard repo with everything you should have in it
-  when "2" then
-    puts "Name of the #{"project".blue}:".red
-    project = STDIN.gets.chomp
-    project.gsub!(/\s+/, "_")
-    offset_pro = 49 - project.size
-    system("echo $USER > auteur")
-    user.delete!("\n")
-    FileUtils.mkdir_p(objs)
-    File.new(objs + ".gitignore", 'w')
-    FileUtils.mkdir_p(includes)
-    if !File.exist?(includes + project +".h")
-      File.open(includes + project + ".h", 'w') {|f|
+when "2" then
+  puts "Name of the #{"project".blue}:".red
+  project = STDIN.gets.chomp
+  project.gsub!(/\s+/, "_")
+  offset_pro = 49 - project.size
+  system("echo $USER > auteur")
+  user.delete!("\n")
+  FileUtils.mkdir_p(objs)
+  File.new(objs + ".gitignore", 'w')
+  FileUtils.mkdir_p(includes)
+  if !File.exist?(includes + project +".h")
+    File.open(includes + project + ".h", 'w') {|f|
       f.puts("/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
@@ -107,6 +193,8 @@ when "1" then
       f.puts("")
       f.puts("#ifndef #{project.upcase}_H")
       f.puts("# define #{project.upcase}_H")
+      f.puts("")
+      f.puts("/* function prototypes */")
       f.puts("")
       f.puts("#endif /* !#{project.upcase}_H */")
       }
