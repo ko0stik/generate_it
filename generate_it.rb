@@ -6,7 +6,7 @@
 #    By: hmichals <hmichals@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/02/05 01:07:34 by hmichals          #+#    #+#              #
-#    Updated: 2014/02/06 16:59:29 by hmichals         ###   ########.fr        #
+#    Updated: 2014/02/06 17:08:03 by hmichals         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -165,7 +165,7 @@ puts("")
     end
 
     puts("")
-    puts("#{count.to_s.green} prototypes added and #{count.to_s.green} removed from your #{project.red}.h, please check the padding")
+    puts("#{count.to_s.green} prototypes added and #{count_bis.to_s.green} removed from your #{project.red}.h, please check the padding")
   end
     #Create for you a standard repo with everything you should have in it
 when "2" then
