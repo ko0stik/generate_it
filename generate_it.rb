@@ -6,7 +6,7 @@
 #    By: hmichals <hmichals@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/02/05 01:07:34 by hmichals          #+#    #+#              #
-#    Updated: 2014/02/06 16:55:45 by hmichals         ###   ########.fr        #
+#    Updated: 2014/02/06 16:59:29 by hmichals         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -137,7 +137,9 @@ puts("")
       tmp.gsub!("/* function prototypes */\n", "/* function prototypes */\n\n" + p + ";")
       File.open(includes + project + ".h", 'w'){ |f| f.puts(tmp) }
     end
+  end
 
+  if File.exist?("Makefile") && File.exist?(srcs) && File.exist?(includes)
     puts("")
     puts("===============================================================")
     puts("Now we check if the header does not contain non-existent function prototypes")
@@ -164,8 +166,8 @@ puts("")
 
     puts("")
     puts("#{count.to_s.green} prototypes added and #{count.to_s.green} removed from your #{project.red}.h, please check the padding")
-    #Create for you a standard repo with everything you should have in it
   end
+    #Create for you a standard repo with everything you should have in it
 when "2" then
   puts "Name of the #{"project".blue}:".red
   project = STDIN.gets.chomp
