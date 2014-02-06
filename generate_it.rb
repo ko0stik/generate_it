@@ -6,7 +6,7 @@
 #    By: hmichals <hmichals@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/02/05 01:07:34 by hmichals          #+#    #+#              #
-#    Updated: 2014/02/06 16:45:56 by hmichals         ###   ########.fr        #
+#    Updated: 2014/02/06 16:55:45 by hmichals         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -137,35 +137,35 @@ puts("")
       tmp.gsub!("/* function prototypes */\n", "/* function prototypes */\n\n" + p + ";")
       File.open(includes + project + ".h", 'w'){ |f| f.puts(tmp) }
     end
-  end
 
-puts("")
-puts("===============================================================")
-puts("Now we check if the header does not contain non-existent function prototypes")
-puts("")
+    puts("")
+    puts("===============================================================")
+    puts("Now we check if the header does not contain non-existent function prototypes")
+    puts("")
 
-  count_bis = 0
+    count_bis = 0
 
-  prot_h.each do |p|
+    prot_h.each do |p|
     bol = 0
-    prot.each do |h|
-      if p.gsub(/\s+/, "").delete(";") == h.gsub(/\s+/, "")
+      prot.each do |h|
+        if p.gsub(/\s+/, "").delete(";") == h.gsub(/\s+/, "")
         bol = 1
         puts(h.split[1].gsub(/\(.*/, "") + "() >>" + " MATCH".green)
       end
-    end
-    if bol == 0
+      end
+      if bol == 0
       puts(p.split[1].gsub(/\(.*/, "") + "() >>" + " NO MATCH".red + " deleting it from #{project.blue}.h")
       tmp = File.read(includes + project + ".h")
       count_bis += 1
       tmp.gsub!(p + "\n", "")
       File.open(includes + project + ".h", 'w'){ |f| f.puts(tmp) }
     end
-  end
+    end
 
-  puts("")
-  puts("#{count.to_s.green} prototypes added and #{count.to_s.green} removed from your #{project.red}.h, please check the padding")
-  #Create for you a standard repo with everything you should have in it
+    puts("")
+    puts("#{count.to_s.green} prototypes added and #{count.to_s.green} removed from your #{project.red}.h, please check the padding")
+    #Create for you a standard repo with everything you should have in it
+  end
 when "2" then
   puts "Name of the #{"project".blue}:".red
   project = STDIN.gets.chomp
