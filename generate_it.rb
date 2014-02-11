@@ -6,7 +6,7 @@
 #    By: hmichals <hmichals@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/02/05 01:07:34 by hmichals          #+#    #+#              #
-#    Updated: 2014/02/06 20:25:29 by hmichals         ###   ########.fr        #
+#    Updated: 2014/02/11 18:27:56 by hmichals         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -165,7 +165,7 @@ puts("")
       puts(p.split[1].gsub(/\(.*/, "") + "() >>" + " NO MATCH".red + " adding it to #{project.blue}.h")
       tmp = File.read(includes + project + ".h")
       count += 1
-      tmp.gsub!("/* function prototypes */\n", "/* function prototypes */\n\n" + p + ";")
+      tmp.gsub!("/*\n** function prototypes\n*/\n", "/*\n** function prototypes\n*/\n\n" + p + ";")
       File.open(includes + project + ".h", 'w'){ |f| f.puts(tmp) }
     end
   end
@@ -227,7 +227,10 @@ when "2" then
       f.puts("#ifndef #{project.upcase}_H")
       f.puts("# define #{project.upcase}_H")
       f.puts("")
-      f.puts("/* function prototypes */")
+      f.puts("/*
+** function prototypes
+*/")
+      f.puts("")
       f.puts("")
       f.puts("#endif /* !#{project.upcase}_H */")
       }
