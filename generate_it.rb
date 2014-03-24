@@ -1,3 +1,5 @@
+#!/usr/bin/ruby
+
 # **************************************************************************** #
 #                                                                              #
 #                                                         :::      ::::::::    #
@@ -6,11 +8,9 @@
 #    By: hmichals <hmichals@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/02/05 01:07:34 by hmichals          #+#    #+#              #
-#    Updated: 2014/02/11 18:27:56 by hmichals         ###   ########.fr        #
+#    Updated: 2014/03/20 13:04:43 by hmichals         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
-
-#!/usr/bin/ruby
 
 #First some colors!
 class String
@@ -68,10 +68,10 @@ while choice != "1" && choice != "2" && choice != "3" && choice != "4"
   puts "\n\n\nNB:".red + "		Please note that this script is still being under construction."
   puts "\nDONE".blue + "		- Now with headers preimplemented (for standard logins)
 		- Now names with less than 8 chars also have a correct header
-		- your project.h is now updated accordingly to your sources.c, can still be buggy though"
-  puts "\nTODOLIST".blue + "	- BUGFIX: deleting main.c from the srcs repo messes up the Makefile
-		- the section 1 is still empty"
-  puts "\n\n\n\n\n\n\n\nhmichals v0.2".blue
+		- (#1)your project.h is now updated accordingly to your sources.c, can still be buggy though
+		- (#2) you have now the possibility to specify whether you want to include your libft in the project or not"
+  puts "\nTODOLIST".blue + "	- BUGFIX: deleting main.c from the srcs repo messes up the Makefile"
+  puts "\n\n\n\n\n\n\n\nhmichals v0.3".blue
   choice = gets.chomp
 end
 system("clear")
@@ -200,9 +200,18 @@ puts("")
   end
     #Create for you a standard repo with everything you should have in it
 when "2" then
+
+  #Sub-menu
+  puts "Do you want to include your libft?[y/n]"
+  libft_include = ""
+  while libft_include != "y" && libft_include != "n"
+    libft_include = STDIN.gets.chomp
+  end
+
   puts "Name of the #{"project".blue}:".red
   project = STDIN.gets.chomp
   project.gsub!(/\s+/, "_")
+
   offset_pro = 49 - project.size
   system("echo $USER > auteur")
   user.delete!("\n")
@@ -277,7 +286,17 @@ int		main(void)
     f.puts("")
     f.puts("CC = llvm-gcc")
     f.puts("")
-    f.puts("CFLAGS = -Wall -Wextra -Werror -O3 -I includes/ -g")
+
+    if libft_include == "y"
+      f.puts("LIBDIR = libft")
+      f.puts("")
+      f.puts("LIB = libft.a")
+      f.puts("")
+      f.puts("CFLAGS = -Wall -Wextra -Werror -O3 -I includes/ -g")
+    else
+      f.puts("CFLAGS = -Wall -Wextra -Werror -O3 -I includes/ -g")
+    end
+
     f.puts("")
     f.puts("SRCDIR = " + srcs)
     f.puts("")
@@ -285,21 +304,50 @@ int		main(void)
     f.puts("")
     f.puts("SRC =	main.c")
     f.puts("")
-    f.puts("LDFLAGS = -I includes -g")
-    f.puts("")
+
+    if libft_include == "y"
+      f.puts("LDFLAGS = -I includes -I $(LIBDIR) -L $(LIBDIR) -lft -g")
+      f.puts("")
+    else
+      f.puts("LDFLAGS = -I includes -g")
+      f.puts("")
+    end
+
     f.puts("OBJ = $(SRC:%.c=%.o)")
     f.puts("")
     f.puts("OBJ_LIST = $(addprefix $(OBJDIR), $(OBJ))")
     f.puts("")
     f.puts("all: $(NAME)")
     f.puts("")
-    f.puts("$(NAME): $(OBJ_LIST)
+
+    if libft_include == "y"
+      f.puts("$(NAME): $(OBJ_LIST)
+	$(MAKE) -C $(LIBDIR)
 	$(CC) $(OBJ_LIST) -o $(NAME) $(LDFLAGS)")
+      else
+      f.puts("$(NAME): $(OBJ_LIST)
+	$(CC) $(OBJ_LIST) -o $(NAME) $(LDFLAGS)")
+    end
+
     f.puts("")
     f.puts("$(OBJDIR)%.o: $(SRCDIR)%.c")
     f.puts("	@$(CC) -o $@ -c $< $(CFLAGS)")
     f.puts("")
-    f.puts("clean:
+
+    if libft_include == "y"
+      f.puts("clean:
+	$(MAKE) -C $(LIBDIR) clean
+	/bin/rm -fr $(OBJ_LIST)
+
+fclean: clean
+	$(MAKE) -C $(LIBDIR) fclean
+	/bin/rm -f $(NAME)
+
+re: fclean all
+
+.PHONY: all clean fclean re")
+    else
+      f.puts("clean:
 	/bin/rm -fr $(OBJ_LIST)
 
 fclean: clean
@@ -308,7 +356,11 @@ fclean: clean
 re: fclean all
 
 .PHONY: all clean fclean re")
+    end
     puts("\nOperation complete".green)
+    if libft_include == "y"
+      puts "don't forget to link or copy your libft in the folder"
+    end
     puts("\nPlease press #{"ENTER".red} to exit")
     STDIN.gets.chomp
     system("clear")
