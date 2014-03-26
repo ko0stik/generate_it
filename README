@@ -6,10 +6,15 @@
      By: hmichals <hmichals@student.42.fr>          +#+  +:+       +#+          
                                                   +#+#+#+#+#+   +#+             
      Created: 2014/02/05 16:12:47 by hmichals          #+#    #+#               
-     Updated: 2014/02/06 16:47:58 by hmichals         ###   ########.fr         
+     Updated: 2014/03/26 15:14:48 by hmichals         ###   ########.fr         
                                                                                 
 ********************************************************************************
 
+#1
+> Check si #include <projet.h> est present dans vos .c
+> MaJ du .h (ajout/suppr prototypes)
+
+#2
 Petit generateur de repo base sur l'architecture :
 > auteur
 > Makefile
@@ -17,6 +22,24 @@ Petit generateur de repo base sur l'architecture :
 > objs (.gitignore)
 > includes (project_name.h)
 
+#3
+> MaJ du Makefile (ajout/suppr des sources)
+
 Vous pouvez egalement mettre a jour votre .h en supprimant les prototypes obsoletes ou en rajoutant les nouveaux non encore ajoutes.
 
-Pour l'utiliser, "ruby generate_it.rb [opt]" ou opt peut etre 1/2/3
+Attention a ne pas supprimer votre main.c ou le script aura un comportement indetermine (en gros, il va pourrir votre Makefile >:/ )
+
+Repo github: https://github.com/ko0stik/generate_it
+
+N'hesitez pas a me contacter si vous voulez contribuer ou me donner des pistes d'ameliorations (dans la limite du temps disponible).
+
+
+==============================
+
+replace_header >
+Comme son nom l'indique, remplace les headers des .c par vos propres headers.
+
+
+
+DISCLAIMER:
+Une nouvelle norminette est arrivee, il est fort probable que certaines choses ne seront plus a la norme (au hasard, le /* !PROJECT_H */). N'hesitez pas a me faire remonter l'information.
